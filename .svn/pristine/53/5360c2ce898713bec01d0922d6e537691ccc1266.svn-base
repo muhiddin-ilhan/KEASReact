@@ -1,0 +1,348 @@
+import React, { Component } from 'react'
+import Header from '../../components/Header'
+import Menu from '../../components/Menu'
+import PageContent from '../../components/PageContent'
+import PageConstant from '../../constant/page_constant'
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
+import L from 'leaflet'
+import '../../css/geosearch.css';
+import '../../css/leaflet.css';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow
+});
+
+const searchControl = new GeoSearchControl({
+    provider: new OpenStreetMapProvider({
+        params: {
+            'accept-language': 'tr',
+            countrycodes: 'tr'
+        },
+    }),
+    showMarker: true, // optional: true|false  - default true
+    showPopup: false, // optional: true|false  - default false
+    style: 'bar',
+    position: 'topright',
+    marker: {
+        icon: new L.Icon.Default(),
+        draggable: false,
+    },
+    popupFormat: ({ query, result }) => result.label, // optional: function    - default returns result label,
+    resultFormat: ({ result }) => result.label, // optional: function    - default returns result label
+    maxMarkers: 1, // optional: number      - default 1
+    retainZoomLevel: false, // optional: true|false  - default false
+    animateZoom: true, // optional: true|false  - default true
+    autoClose: true, // optional: true|false  - default false
+    searchLabel: 'Ara...', // optional: string      - default 'Enter address'
+    keepResult: false, // optional: true|false  - default false
+    updateMap: true, // optional: true|false  - default true
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
+
+export default class InfoView extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            defaultCenter: [39.90, 32.85],
+            defaultZoom: 12,
+            map: null,
+            shipment_id: props.shipment_id ?? -1,
+            target_lat: 39.8891262,
+            target_lon: 32.7993822,
+            shipment_lat: 39.9097527,
+            shipment_lon: 32.7991891,
+            task_title: "",
+            task_description: "",
+            target_arrive_time: new Date(),
+            target_finish_time: new Date(),
+            user_route: [[
+                32.7993822,
+                39.8891262
+            ],
+            [
+                32.7999616,
+                39.888978
+            ],
+            [
+                32.8008628,
+                39.8892579
+            ],
+            [
+                32.8015065,
+                39.8897683
+            ],
+            [
+                32.802515,
+                39.8904268
+            ],
+            [
+                32.8032017,
+                39.8909372
+            ],
+            [
+                32.8043818,
+                39.8914805
+            ],
+            [
+                32.8055406,
+                39.8921061
+            ],
+            [
+                32.8068924,
+                39.8928305
+            ],
+            [
+                32.8080511,
+                39.8939994
+            ],
+            [
+                32.808845,
+                39.8947896
+            ],
+            [
+                32.8083944,
+                39.8946908
+            ],
+            [
+                32.807858,
+                39.8944604
+            ],
+            [
+                32.8071928,
+                39.8942793
+            ],
+            [
+                32.8062916,
+                39.8940323
+            ],
+            [
+                32.8057122,
+                39.8939994
+            ],
+            [
+                32.8057981,
+                39.8945427
+            ],
+            [
+                32.8057551,
+                39.895053
+            ],
+            [
+                32.8046608,
+                39.8951024
+            ],
+            [
+                32.8046823,
+                39.8957445
+            ],
+            [
+                32.8045964,
+                39.8962054
+            ],
+            [
+                32.8032446,
+                39.8962383
+            ],
+            [
+                32.8026867,
+                39.8965511
+            ],
+            [
+                32.8018928,
+                39.8971273
+            ],
+            [
+                32.8010988,
+                39.8976376
+            ],
+            [
+                32.8020859,
+                39.8979669
+            ],
+            [
+                32.8028154,
+                39.8979998
+            ],
+            [
+                32.8020859,
+                39.8988064
+            ],
+            [
+                32.8016782,
+                39.8997118
+            ],
+            [
+                32.8014851,
+                39.9005349
+            ],
+            [
+                32.8012919,
+                39.9015061
+            ],
+            [
+                32.8010988,
+                39.9025102
+            ],
+            [
+                32.8029871,
+                39.9030864
+            ],
+            [
+                32.8042316,
+                39.9041234
+            ],
+            [
+                32.8051758,
+                39.9049464
+            ],
+            [
+                32.8062487,
+                39.9060163
+            ],
+            [
+                32.8073215,
+                39.9066583
+            ],
+            [
+                32.8062916,
+                39.9079092
+            ],
+            [
+                32.8052402,
+                39.9091272
+            ],
+            [
+                32.8044248,
+                39.9097527
+            ],
+            [
+                32.8029871,
+                39.9097033
+            ],
+            [
+                32.8018069,
+                39.9095716
+            ],
+            [
+                32.8003693,
+                39.9094729
+            ],
+            [
+                32.7997899,
+                39.9095881
+            ],
+            [
+                32.7993608,
+                39.9095552
+            ],
+            [
+                32.7991891,
+                39.9097527
+            ]]
+        }
+
+        this.getInfoForShipment();
+    }
+
+    getInfoForShipment = () => {
+        const { user_route } = this.state;
+        user_route.map(item => {
+            const tmp = item[0];
+            item[0] = item[1];
+            item[1] = tmp;
+            return false;
+        });
+    }
+
+    goLatLng = (latLng) => {
+        const { map } = this.state;
+        map.target.flyTo(latLng, 15);
+    }
+
+
+    render() {
+        const { defaultCenter, defaultZoom, user_route, target_lat, target_lon, shipment_lat, shipment_lon } = this.state;
+        return (
+            <div>
+                <Header />
+                <Menu pageName={PageConstant.INFO_PAGE_URL} />
+                <div className="content-wrapper pt-3">
+                    <PageContent>
+                        <div className="row mb-3" style={{ height: 600 }}>
+                            <div className="col-md-9">
+                                <MapContainer style={{ height: 600, width: '100%' }} center={defaultCenter} zoom={defaultZoom} scrollWheelZoom={true}
+                                    whenReady={(map) => {
+                                        this.setState({ map });
+                                        map.target.addControl(searchControl)
+                                        map.target.on("click", this.mapClick);
+                                    }}>
+                                    <TileLayer
+                                        attribution=''
+                                        url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+                                    />
+                                    <Polyline positions={user_route} color={"red"} />
+                                </MapContainer>
+                            </div>
+                            <div className="col-md-3 h-100">
+                                <div className="card h-100">
+                                    <h5 className="card-header text-center">Bilgiler</h5>
+                                    <div className="card-body">Deneem</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card">
+                            <h5 className="card-header text-center">Görev Bilgileri</h5>
+                            <div className="card-body">
+                                <table class="table table-striped table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th className="col-md-3">Kullanıcı</th>
+                                            <td className="col-md-8">Muhiddin İLHAN</td>
+                                            <td style={{ cursor: "pointer" }} className="text-center"><i className="fas fa-chevron-right"></i></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Mal Yükleme Noktası</th>
+                                            <td>{"Lat (X) : " + target_lat.toString() + ", Lon (Y) : " + target_lon.toString()}</td>
+                                            <td style={{ cursor: "pointer" }} onClick={this.goLatLng.bind(this, [target_lat, target_lon])} className="text-center"><i className="fas fa-chevron-right"></i></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Mal Boşaltım Noktası</th>
+                                            <td>{"Lat (X) : " + shipment_lat.toString() + ", Lon (Y) : " + shipment_lon.toString()}</td>
+                                            <td style={{ cursor: "pointer" }} onClick={this.goLatLng.bind(this, [shipment_lat, shipment_lon])} className="text-center"><i className="fas fa-chevron-right"></i></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Görev Başlığı</th>
+                                            <td>Kütük Alınacak</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Görev Açıklaması</th>
+                                            <td>-</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Mal Alım Tarihi</th>
+                                            <td>Jacob</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Mal Teslim Tarihi</th>
+                                            <td>Jacob</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </PageContent>
+                </div>
+            </div>
+        )
+    }
+}

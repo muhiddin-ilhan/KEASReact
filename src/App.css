@@ -1,0 +1,17 @@
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+  }
+  
+  .center-cropped {
+    object-fit: cover; /* Do not scale the image */
+    object-position: center; /* Center the image within the element */
+    height: 125px;
+    cursor: pointer;
+    transition: transform .2s;
+  }
+  
+  .center-cropped :hover {
+    transform: scale(1.5);
+  }
+  

@@ -1,0 +1,142 @@
+import React, { Component } from 'react'
+import Header from '../../components/Header'
+import Menu from '../../components/Menu'
+import PageConstant from '../../constant/page_constant'
+import PageContent from '../../components/PageContent'
+import PageContentHeader from '../../components/PageContentHeader'
+import MaterialTable from 'material-table'
+import { tableIcons, tableLocalization, tableOptions } from '../../config/material_table_config'
+import { Assessment, Delete } from '@material-ui/icons'
+import { Redirect } from 'react-router-dom'
+import { HttpRequest } from '../../services/services'
+import AppConstant from '../../constant/app_constant'
+import { SwAlert, SwAlertToast } from '../../components/SweetAlert'
+import Edit from '@material-ui/icons/Edit'
+
+export default class TaskView extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            redirect: "",
+            tasks: [],
+            clickedTask: {}
+        }
+
+        this.getAllTasks();
+    }
+
+    getAllTasks = async () => {
+        const user = JSON.parse(localStorage.getItem("user"))
+        let body = ""
+        if (user.VendorId !== 1) {
+            body = {
+                "VendorId": user.VendorId
+            }
+        }
+
+        const response = await HttpRequest(body, "/Task/GetAllTasks");
+
+        this.setState({ isLoading: false });
+
+        if (response === "goLogin") window.location.assign(AppConstant.WEB_URL + PageConstant.LOGIN_PAGE_URL);
+
+        if (response === "Error") return;
+
+        if (!response.length) return;
+
+        this.setState({
+            tasks: response
+        })
+    }
+
+    goTaskEditPage = (e, taskInfo) => {
+        this.setState({
+            clickedTask: taskInfo,
+            redirect: PageConstant.TASK_EDIT_PAGE_URL
+        })
+    }
+
+    onDeleteTask = async (e, taskInfo) => {
+        const result = await SwAlert({ icon: "success", title: "Görevi Sil", text: "Görevi Silmek İstediğinizden Emin misiniz?" })
+        if (result.isConfirmed) {
+            this.setState({ isLoading: true });
+
+            const data = {
+                Id: taskInfo.Id
+            }
+
+            const response = await HttpRequest(data, "/Task/DeleteTask");
+
+            this.setState({ isLoading: false });
+
+            if (response === "goLogin") window.location.assign(AppConstant.WEB_URL + PageConstant.LOGIN_PAGE_URL);
+
+            if (response === "Error") {
+                SwAlertToast({ icon: "error", title: "İşlem Sırasında Bir Hata Oluştu" });
+                return;
+            };
+
+            if (response.IsSuccess) {
+                SwAlertToast({ icon: "success", title: "Tedarikçi Başarıyla Silindi" });
+            } else {
+                SwAlertToast({ icon: "error", title: "İşlem Sırasında Bir Hata Oluştu" });
+            }
+
+            this.setState({
+                tasks: this.state.tasks.filter(item => item.Id != taskInfo.Id)
+            })
+        }
+    }
+
+    render() {
+        const { isLoading, redirect, tasks, clickedTask } = this.state;
+
+        if (redirect === PageConstant.TASK_EDIT_PAGE_URL) {
+            return <Redirect to={{ pathname: PageConstant.TASK_EDIT_PAGE_URL, state: { task: clickedTask } }} push={true} />;
+        }
+
+        return (
+            <div>
+                <Header />
+                <Menu pageName={PageConstant.TASKS_PAGE_URL} />
+                <div className="content-wrapper">
+                    <PageContentHeader>
+                        <h1 className="m-0 text-dark">Görev Listesi</h1>
+                    </PageContentHeader>
+
+                    <PageContent>
+                        <MaterialTable
+                            isLoading={isLoading}
+                            icons={tableIcons}
+                            options={tableOptions}
+                            localization={tableLocalization}
+                            actions={[
+                                {
+                                    icon: Delete,
+                                    tooltip: "Görevi Sil",
+                                    onClick: this.onDeleteTask
+                                },
+                                {
+                                    icon: Edit,
+                                    tooltip: "Güncelle",
+                                    onClick: this.goTaskEditPage
+                                }
+                            ]}
+                            columns={[
+                                { title: "#", field: "Id" },
+                                { title: "Başlık", field: "TaskTitle" },
+                                { title: "Kimin Adına", field: "ConsumerName" },
+                                { title: "Kayıt Yapan", field: "RegistrantName" },
+                                { title: "Teslimat Fabrikası", field: "Factory.Title" },
+                                { title: "Tedarikçi", field: "Vendor.Title" }
+                            ]}
+                            data={tasks}
+                            title={"Tedarikçi Listesi"}
+                        />
+                    </PageContent>
+                </div>
+            </div>
+        )
+    }
+}

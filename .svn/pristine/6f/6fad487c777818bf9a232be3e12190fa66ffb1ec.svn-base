@@ -1,0 +1,30 @@
+export default class PageConstant {
+    static LOGIN_PAGE_URL = process.env.PUBLIC_URL + "/login";
+    static MAIN_PAGE_URL = process.env.PUBLIC_URL + "/";
+    static USERS_PAGE_URL = process.env.PUBLIC_URL + "/users";
+    //static TASK_ADD_PAGE_URL = process.env.PUBLIC_URL + "/addtask";
+    static USER_TASK_PAGE_URL = process.env.PUBLIC_URL + "/usertask";
+    static REGISTER_PAGE_URL = process.env.PUBLIC_URL + "/register";
+    static USER_EDIT_PAGE_URL = process.env.PUBLIC_URL + "/user_edit"
+    static USER_ADD_PAGE_URL = process.env.PUBLIC_URL + "/user_add"
+    static TRUCKS_PAGE_URL = process.env.PUBLIC_URL + "/trucks"
+    static TRUCKS_EDIT_PAGE_URL = process.env.PUBLIC_URL + "/trucks_edit"
+    static TRUCKS_ADD_PAGE_URL = process.env.PUBLIC_URL + "/trucks_add"
+    static VENDOR_PAGE_URL = process.env.PUBLIC_URL + "/vendors"
+    static VENDOR_ADD_PAGE_URL = process.env.PUBLIC_URL + "/vendor_add"
+    static VENDOR_EDIT_PAGE_URL = process.env.PUBLIC_URL + "/vendor_edit"
+    static FACTORIES_PAGE_URL = process.env.PUBLIC_URL + "/factories"
+    static FACTORY_ADD_PAGE_URL = process.env.PUBLIC_URL + "/factory_add"
+    static FACTORY_EDIT_PAGE_URL = process.env.PUBLIC_URL + "/factory_edit"
+    static TASKS_PAGE_URL = process.env.PUBLIC_URL + "/tasks"
+    static TASK_ADD_PAGE_URL = process.env.PUBLIC_URL + "/task_add"
+    static TASK_EDIT_PAGE_URL = process.env.PUBLIC_URL + "/task_edit"
+    static TASK_ASSIGN_PAGE_URL = process.env.PUBLIC_URL + "/task_assign"
+    static ASSIGNED_TASK_PAGE_URL = process.env.PUBLIC_URL + "/task_assigned"
+    static ASSIGNED_TASK_DETAIL_PAGE_URL = process.env.PUBLIC_URL + "/task_assigned_detail"
+    static TASK_ROUTE_MAP_VIEW = process.env.PUBLIC_URL + "/task_route_map"
+    static DANGER_AREA_ADD_VIEW = process.env.PUBLIC_URL + "/danger_area_add"
+    static DANGER_AREAS_VIEW = process.env.PUBLIC_URL + "/danger_areas"
+    static FACTORY_TASK_VİEW = process.env.PUBLIC_URL + "/factory_task"
+    static FACTORY_ENTRY_VİEW = process.env.PUBLIC_URL + "/factory_entry"
+}
